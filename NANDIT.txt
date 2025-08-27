@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday Kannu 🎉</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+  }
+  .page {
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+    z-index: 1;
+  }
+  .active { display: flex; }
+  .countdown {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  .gift {
+    width: 120px;
+    height: 120px;
+    background: red;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
+  .scroll {
+    display: none;
+    background: #fdf3e7;
+    color: #333;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    width: 80%;
+  }
+  .slideshow img {
+    width: 300px;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    animation: fade 1s ease-in-out;
+  }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .final-message {
+    font-size: 2rem;
+    color: #d63384;
+    max-width: 90%;
+    line-height: 1.5;
+  }
+  /* Floating Hearts Background */
+  .floating-hearts {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .heart {
+    width: 20px; height: 20px;
+    background: red;
+    position: absolute;
+    transform: rotate(45deg);
+    animation: floatUp 5s linear infinite;
+    opacity: 0.8;
+  }
+  .heart::before, .heart::after {
+    content: "";
+    width: 20px; height: 20px;
+    background: red;
+    border-radius: 50%;
+    position: absolute;
+  }
+  .heart::before { top: -10px; left: 0; }
+  .heart::after { left: -10px; top: 0; }
+  @keyframes floatUp {
+    0% { bottom: -20px; opacity: 1; transform: rotate(45deg) scale(1); }
+    100% { bottom: 100%; opacity: 0; transform: rotate(45deg) scale(1.5); }
+  }
+  /* Nav Button */
+  .nav-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  /* Audio toggle button */
+  .audio-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 14px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 9999;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+</style>
+<link rel="preload" as="audio" href="Rabb Manneya Koi Jaane Na 128 Kbps.mp3">
+</head>
+<body>
+
+<!-- Floating Hearts Background -->
+<div class="floating-hearts" id="hearts"></div>
+
+<!-- Confetti Canvas -->
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+
+<!-- Page 1 -->
+<div class="page active" id="page1">
+  <div class="countdown" id="countdown1">Countdown loading...</div>
+  <div class="gift" onclick="revealScroll()">🎁 Click Me</div>
+  <div class="scroll" id="scroll">
+    Dear Kannu,<br><br>
+    On this special day, I just want to say how much you mean to me. You're my sunshine, my reason to smile, and the love of my life.<br><br>
+    Happy Birthday My Dumling, My Baby, My Bestset Friend, My Cute sa Little sa Panda Happy Birthday Kannu ❤️<
+  </div>
+</div>
+
+<!-- Page 2 -->
+<div class="page" id="page2">
+  <h1>Our Memories</h1>
+  <div class="slideshow">
+    <img id="slide" src="1.jpg" alt="Slideshow">
+  </div>
+</div>
+
+<!-- Page 3 -->
+<div class="page" id="page3">
+  <h1>Things I Want to Tell You 💖</h1>
+  <p class="final-message">
+    Happy Birthday to the one who means the world to me!<br><br>
+   
+    I can't put into words how thankful I am for you—for walking into my life and filling it with so much light.
+    Thank you for being the reason behind my smiles, for understanding me like no one else can, and for standing by my side no matter what life throws our way. You're my blessing from the universe, my proof that miracles do happen. I'll always be grateful for the day I found you, and even more grateful that you stayed. Today is all about celebrating you, the beautiful soul that makes every day so much brighter. Have the most amazing birthday—you deserve nothing less! 💕
+  </p>
+</div>
+
+<button class="nav-btn" onclick="nextPage()">Next ➤</button>
+
+<audio id="bgMusic" autoplay loop preload="auto" playsinline muted>
+  <source id="bgSrc" src="Rabb Manneya Koi Jaane Na 128 Kbps.mp3" type="audio/mpeg">
+</audio>
+<button id="audioToggle" class="audio-btn">🔊 enable sound </button>
+
+<script>
+  // Countdown
+  const countdown1 = document.getElementById("countdown1");
+  const countdownDate = new Date("Nov 12, 2025 00:00:00").getTime();
+  setInterval(() => {
+    const now = new Date().getTime();
+    const distance = countdownDate - now;
+    if (distance < 0) return countdown1.innerHTML = "🎉 It's Today! 🎉";
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    countdown1.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }, 1000);
+
+  // Page Navigation
+  let pageIndex = 0;
+  const pages = document.querySelectorAll(".page");
+  function nextPage() {
+    pages[pageIndex].classList.remove("active");
+    pageIndex = (pageIndex + 1) % pages.length;
+    pages[pageIndex].classList.add("active");
+    if (pageIndex === pages.length - 1) {
+      launchConfetti();
+    }
+  }
+
+  // Gift Box
+  function revealScroll() {
+    document.getElementById("scroll").style.display = "block";
+  }
+
+  // Slideshow (your uploaded photos)
+  const photos = [
+    "1.jpg", "2.jpg", "3.jpg", "4.jpg",
+    "5.jpg", "6.jpg", "7.jpg", "8.jpg",
+    "9.jpg", "10.jpg", "11.jpg", "12.jpg",
+    "13.jpg", "14.jpg", "15.jpg", "16.jpg"
+];
+  let slideIndex = 0;
+  setInterval(() => {
+    slideIndex = (slideIndex + 1) % photos.length;
+    document.getElementById("slide").src = photos[slideIndex];
+  }, 2500);
+
+  // Floating Hearts
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.style.left = Math.random() * 100 + "%";
+    heart.style.animationDuration = (3 + Math.random() * 4) + "s";
+    document.getElementById("hearts").appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+  setInterval(createHeart, 300);
+
+  // Confetti Burst (5 seconds)
+  function launchConfetti() {
+    const canvas = document.getElementById("confetti-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let pieces = [];
+    for (let i = 0; i < 150; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 10 + 5,
+        d: Math.random() * 2 + 1,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      });
+    }
+    let animationId;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let p of pieces) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        p.y += p.d;
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+      }
+      animationId = requestAnimationFrame(draw);
+    }
+    draw();
+    setTimeout(() => {
+      cancelAnimationFrame(animationId);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }, 5000);
+  }
+
+  // Audio Autoplay + Unmute
+  const bg = document.getElementById('bgMusic');
+  const audioBtn = document.getElementById('audioToggle');
+  const bgSource = document.getElementById('bgSrc');
+  const songPath = "Rabb Manneya Koi Jaane Na 128 Kbps.mp3";
+  bgSource.src = encodeURI(songPath);
+  bg.load();
+
+  async function tryPlay(unmute = false) {
+    if (unmute) {
+      bg.muted = false;
+      bg.volume = 0.6;
+    }
+    try {
+      await bg.play();
+      if (!bg.muted) audioBtn.style.display = 'none';
+    } catch (e) {
+      console.log('Autoplay blocked:', e);
+    }
+  }
+
+  tryPlay(false);
+
+  function enableSound() {
+    tryPlay(true);
+  }
+
+  if (audioBtn) audioBtn.addEventListener('click', enableSound);
+  ['pointerdown', 'keydown', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, () => enableSound(), { once: true });
+  });
+</script>
+
+</body>
+</html>
